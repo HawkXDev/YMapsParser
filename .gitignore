@@ -53,3 +53,5 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 /src/main/resources/chromedriver
 /src/main/resources/prop.properties
+
+temp.html
