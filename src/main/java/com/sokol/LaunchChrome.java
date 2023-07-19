@@ -9,17 +9,13 @@ public class LaunchChrome {
 
     public static void main(String[] args) {
         String url = getProperty("url");
-        System.out.println(url);
 
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver");
+        WebDriver driver = new ChromeDriver();
 
-//        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver");
-//        WebDriver driver = new ChromeDriver();
-//
-//        driver.get("https://www.google.com");
-//        System.out.println(driver.getTitle());
-//
-//        driver.quit();
+        driver.get(url);
+        System.out.println(driver.getTitle());
 
-
+        driver.quit();
     }
 }
