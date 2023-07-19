@@ -58,13 +58,7 @@ public class LaunchChrome {
 
         while (true) {
             scrollToEnd(driver, scrollContent);
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Thread.currentThread().interrupt();
-            }
+            sleep(1000);
 
             List<WebElement> currentSearchSnippets = scrollContent.findElements(By.className("search-snippet-view"));
             log.info("currentSearchSnippets: {}", currentSearchSnippets.size());
@@ -77,5 +71,14 @@ public class LaunchChrome {
         }
 
         return searchSnippets;
+    }
+
+    private static void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
     }
 }
