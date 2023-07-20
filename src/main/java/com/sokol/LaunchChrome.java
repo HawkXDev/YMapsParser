@@ -1,5 +1,6 @@
 package com.sokol;
 
+import com.sokol.util.xlsx.ExportToXLXS;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,7 @@ public class LaunchChrome {
 
     public static void main(String[] args) {
         String url = getProperty("url");
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver");
 
         ChromeDriverService service = null;
         ChromeDriver driver = null;
@@ -91,6 +93,8 @@ public class LaunchChrome {
         }
 
         parseLinks(driver, snippets);
+
+        snippetsToXlsx(snippets);
     }
 
     private static void parseLinks(ChromeDriver driver, List<SearchSnippet> snippets) {
@@ -122,9 +126,14 @@ public class LaunchChrome {
                     log.info("counterElement1: {}", counterElement1);
                     snippet.setPictureCount(Integer.parseInt(counterElement1.getText().trim()));
 
-                    WebElement counterElement2 = elements.get(0).findElement(By.className("tabs-select-view__counter"));
-                    log.info("counterElement2: {}", counterElement2);
-                    snippet.setReviewCount(Integer.parseInt(counterElement2.getText().trim()));
+                    if (elements.size() > 1) {
+                        WebElement counterElement2 = findFirstElementByClassOrElseNull(elements.get(1),
+                                "tabs-select-view__counter");
+                        if (counterElement2 != null) {
+                            log.info("counterElement2: {}", counterElement2);
+                            snippet.setReviewCount(Integer.parseInt(counterElement2.getText().trim()));
+                        }
+                    }
                 }
 
                 WebElement urlElement = driver.findElement(By.className("business-urls-view__text"));
@@ -134,6 +143,17 @@ public class LaunchChrome {
 
             i += 1;
             log.info("snippet {}: {}", i, snippet);
+        }
+    }
+
+    private static void snippetsToXlsx(List<SearchSnippet> snippets) {
+        try {
+            ExportToXLXS.exportToXLSX(snippets, "src/main/resources/snippets.xlsx", new String[]{
+                    "DataId", "Координаты", "Ссылка", "Название", "Адрес", "Статус работы", "Наименование",
+                    "Номер телефона", "Количество фото", "Количество отзывов", "Ссылка на бизнес"
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
