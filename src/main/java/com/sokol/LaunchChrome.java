@@ -39,6 +39,7 @@ public class LaunchChrome {
 
         } finally {
             if (driver != null) {
+                driver.close();
                 driver.quit();
             }
             if (service != null) {
