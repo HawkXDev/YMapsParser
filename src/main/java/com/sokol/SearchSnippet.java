@@ -7,6 +7,11 @@ public class SearchSnippet {
     private String title;
     private String address;
     private String workingStatus;
+    private String title2;
+    private String phoneNumber;
+    private int pictureCount;
+    private int reviewCount;
+    private String businessUrl;
 
     public SearchSnippet() {
     }
@@ -59,6 +64,46 @@ public class SearchSnippet {
         this.workingStatus = workingStatus;
     }
 
+    public String getTitle2() {
+        return title2;
+    }
+
+    public void setTitle2(String title2) {
+        this.title2 = title2;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public int getPictureCount() {
+        return pictureCount;
+    }
+
+    public void setPictureCount(int pictureCount) {
+        this.pictureCount = pictureCount;
+    }
+
+    public int getReviewCount() {
+        return reviewCount;
+    }
+
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
+    }
+
+    public String getBusinessUrl() {
+        return businessUrl;
+    }
+
+    public void setBusinessUrl(String businessUrl) {
+        this.businessUrl = businessUrl;
+    }
+
     @Override
     public String toString() {
         return "SearchSnippet{" +
@@ -68,6 +113,11 @@ public class SearchSnippet {
                 ", title='" + title + '\'' +
                 ", address='" + address + '\'' +
                 ", workingStatus='" + workingStatus + '\'' +
+                ", title2='" + title2 + '\'' + '\n' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", pictureCount=" + pictureCount +
+                ", reviewCount=" + reviewCount +
+                ", businessUrl='" + businessUrl + '\'' +
                 '}';
     }
 }

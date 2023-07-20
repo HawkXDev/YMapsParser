@@ -86,6 +86,54 @@ public class LaunchChrome {
 
             i += 1;
             log.info("searchSnippet {}: {}", i, searchSnippet);
+
+            snippets.add(searchSnippet);
+        }
+
+        parseLinks(driver, snippets);
+    }
+
+    private static void parseLinks(ChromeDriver driver, List<SearchSnippet> snippets) {
+        int i = 0;
+        for (SearchSnippet snippet : snippets) {
+            log.info("snippet {}: {}", i, snippet);
+            String href = snippet.getHref();
+            log.info("href: {}", href);
+            if (href != null) {
+                driver.get(href);
+                sleep(500);
+
+                WebElement headerElement = driver.findElement(By.className("orgpage-header-view__header"));
+                log.info("headerElement: {}", headerElement);
+                snippet.setTitle2(headerElement.getText());
+
+                WebElement phoneNumberElement = findFirstElementByClassOrElseNull(driver,
+                        "orgpage-phones-view__phone-number");
+                if (phoneNumberElement != null) {
+                    log.info("phoneNumberElement: {}", phoneNumberElement);
+                    snippet.setPhoneNumber(phoneNumberElement.getText());
+                }
+
+                List<WebElement> elements = driver.findElements(By.cssSelector(
+                        ".tabs-select-view__title._name_gallery, .tabs-select-view__title._name_reviews"));
+
+                if (!elements.isEmpty()) {
+                    WebElement counterElement1 = elements.get(0).findElement(By.className("tabs-select-view__counter"));
+                    log.info("counterElement1: {}", counterElement1);
+                    snippet.setPictureCount(Integer.parseInt(counterElement1.getText().trim()));
+
+                    WebElement counterElement2 = elements.get(0).findElement(By.className("tabs-select-view__counter"));
+                    log.info("counterElement2: {}", counterElement2);
+                    snippet.setReviewCount(Integer.parseInt(counterElement2.getText().trim()));
+                }
+
+                WebElement urlElement = driver.findElement(By.className("business-urls-view__text"));
+                log.info("urlElement: {}", urlElement);
+                snippet.setBusinessUrl(urlElement.getText());
+            }
+
+            i += 1;
+            log.info("snippet {}: {}", i, snippet);
         }
     }
 
@@ -114,8 +162,14 @@ public class LaunchChrome {
         return searchSnippets;
     }
 
-    private static WebElement findFirstElementByClassOrElseNull(WebElement element, String className) {
-        List<WebElement> elems = element.findElements(By.className(className));
+    private static WebElement findFirstElementByClassOrElseNull(Object element, String className) {
+        List<WebElement> elems = new ArrayList<>();
+
+        if (element instanceof WebElement) {
+            elems = ((WebElement) element).findElements(By.className(className));
+        } else if (element instanceof ChromeDriver) {
+            elems = ((ChromeDriver) element).findElements(By.className(className));
+        }
 
         if (!elems.isEmpty()) {
             return elems.get(0);
