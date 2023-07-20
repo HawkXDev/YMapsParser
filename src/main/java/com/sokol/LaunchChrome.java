@@ -33,10 +33,7 @@ public class LaunchChrome {
             driver.get(url);
             log.info("Title: {}", driver.getTitle());
 
-            WebElement scrollContent = driver.findElement(By.className("scroll__container"));
-
-            List<WebElement> searchSnippets = scrollAndGetAllSearchSnippets(driver, scrollContent);
-            log.info("Snippets: {}", searchSnippets.size());
+            processingHtml(driver);
 
         } finally {
             if (driver != null) {
@@ -45,6 +42,50 @@ public class LaunchChrome {
             if (service != null) {
                 service.stop();
             }
+        }
+    }
+
+    private static void processingHtml(ChromeDriver driver) {
+        WebElement scrollContent = driver.findElement(By.className("scroll__container"));
+
+        List<WebElement> searchSnippets = scrollAndGetAllSearchSnippets(driver, scrollContent);
+        log.info("Snippets: {}", searchSnippets.size());
+
+        List<SearchSnippet> snippets = new ArrayList<>();
+        int i = 0;
+
+        for (WebElement snippet : searchSnippets) {
+            SearchSnippet searchSnippet = new SearchSnippet();
+
+            WebElement divViewBody = snippet.findElement(By.cssSelector("div.search-snippet-view__body"));
+            log.info("divViewBody: {}", divViewBody);
+            searchSnippet.setDataId(divViewBody.getAttribute("data-id"));
+            searchSnippet.setDataCoordinates(divViewBody.getAttribute("data-coordinates"));
+
+            WebElement link = snippet.findElement(By.className("search-snippet-view__link-overlay"));
+            log.info("link: {}", link);
+            searchSnippet.setHref(link.getAttribute("href"));
+
+            WebElement titleElement = snippet.findElement(By.className("search-business-snippet-view__title"));
+            log.info("titleElement: {}", titleElement);
+            searchSnippet.setTitle(titleElement.getText());
+
+            WebElement addressElement = findFirstElementByClassOrElseNull(snippet,
+                    "search-business-snippet-view__address");
+            if (addressElement != null) {
+                log.info("addressElement: {}", addressElement);
+                searchSnippet.setAddress(addressElement.getText());
+            }
+
+            WebElement workingStatusElement = findFirstElementByClassOrElseNull(snippet,
+                    "business-working-status-view");
+            if (workingStatusElement != null) {
+                log.info("workingStatusElement: {}", workingStatusElement);
+                searchSnippet.setWorkingStatus(workingStatusElement.getText());
+            }
+
+            i += 1;
+            log.info("searchSnippet {}: {}", i, searchSnippet);
         }
     }
 
@@ -71,6 +112,16 @@ public class LaunchChrome {
         }
 
         return searchSnippets;
+    }
+
+    private static WebElement findFirstElementByClassOrElseNull(WebElement element, String className) {
+        List<WebElement> elems = element.findElements(By.className(className));
+
+        if (!elems.isEmpty()) {
+            return elems.get(0);
+        } else {
+            return null;
+        }
     }
 
     private static void sleep(int millis) {
